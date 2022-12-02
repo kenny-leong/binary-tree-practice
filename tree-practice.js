@@ -175,59 +175,32 @@ function inOrderPredecessor (rootNode, target, values=[]) {
 
 
 function deleteNodeBST(rootNode, target) {
-  // Do a traversal to find the node. Keep track of the parent
+  function _deleteNodeBST(rootNode, target) {
+    if (!rootNode) return null;
 
-  let parent = getParentNode(rootNode, target)
+    if (target < rootNode.val) { // TARGET IS TO THE LEFT.
+      rootNode.left = _deleteNodeBST(rootNode.left, target);
+    } else if (target > rootNode.val) { // TARGET IS TO THE RIGHT.
+      rootNode.right = _deleteNodeBST(rootNode.right, target); // null
+    } else { // FOUND THE TARGET! target === rootNode.val
+      if (!rootNode.left && !rootNode.right) {
+        // NO CHILDREN.
+        return null;
+      } else if (rootNode.left && rootNode.right) {
+        // 2 CHILDREN.
+        const predVal = inOrderPredecessor(rootNode, target);
+        _deleteNodeBST(rootNode, predVal);
+        rootNode.val = predVal;
+      } else {
+        // 1 CHILD.
+        return rootNode.left ? rootNode.left : rootNode.right;
+      }
+    }
 
-
-  // Undefined if the target cannot be found
-  if (!parent) return undefined;
-
-  // Set target based on parent
-  let targetNode;
-  let tmp;
-
-  if (parent.left.val == target) {
-    targetNode = parent.left;
-    tmp = 'left';
-
-  } else {
-    targetNode = parent.right;
-    tmp = 'right';
+    return rootNode;
   }
 
-  // Case 0: Zero children and no parent:
-  if (!parent) return null;
-  //   return null
-
-  // Case 1: Zero children:
-  if (!targetNode.left && !targetNode.right) {
-    if (parent.left.val == target) parent.left = null;
-    else parent.right = null;
-  }
-
-  // Case 2: Two children:
-  if (targetNode.left && targetNode.right) {
-
-  }
-  //  Set the value to its in-order predecessor, then delete the predecessor
-  //  Replace target node with the left most child on its right side,
-  //  or the right most child on its left side.
-  //  Then delete the child that it was replaced with.
-
-  // Case 3: One child:
-  if (!targetNode.left && targetNode.right) {
-    let child = targetNode.right;
-    if (tmp == 'left') parent.left = child;
-    else parent.right = child;
-  }
-
-  if (targetNode.left && !targetNode.right) {
-    let child = targetNode.left;
-    if (tmp = 'left') parent.left = child;
-    else parent.right = child;
-  //   Make the parent point to the child
-  }
+  _deleteNodeBST(rootNode, target);
 }
 
 module.exports = {
